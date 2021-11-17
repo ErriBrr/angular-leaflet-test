@@ -12,7 +12,7 @@ export interface CapitalsFeature {
 export interface StatesFeature {
     type: "Feature",
     geometry : Geometry,
-    properties: StatesFeature
+    properties: StatesProperties
 };
 
 export interface Geometry {
@@ -31,5 +31,6 @@ export interface StatesProperties {
     STATE: string,
     NAME: string,
     LSAD: string, 
-    CENSUREAREA: number
+    CENSUREAREA: number,
+    center?: number[] | null
 }

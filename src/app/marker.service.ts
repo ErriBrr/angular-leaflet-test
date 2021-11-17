@@ -24,7 +24,6 @@ export class MarkerService {
   makeCapitalCircleMarkers(capitals: CapitalsFeature[]): void {
     const maxPop = Math.max(...capitals.map(x => x.properties.population), 0);
     capitals.forEach(c => {
-      console.log(c);
       const lon = c.geometry.coordinates[0];
       const lat = c.geometry.coordinates[1];
       this.mapController.addCircle(lat, lon, c.properties, MarkerService.scaledRadius(c.properties.population, maxPop))

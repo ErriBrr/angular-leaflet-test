@@ -2,22 +2,22 @@ import { Injectable } from '@angular/core';
 import { PopupService } from './popup.service';
 import * as L from 'leaflet';
 import { GeoJsonFeatures } from './feature';
-import { ShapeService } from './shape.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapControllerService {
   map!: L.Map;
+  markers: L.Marker[] = [];
+  circles: L.CircleMarker[] = [];
+  layers: L.Layer[] = [];
 
-  constructor(
-    private popupService: PopupService, 
-    private shapeService: ShapeService
-  ) {}
+  constructor(private popupService: PopupService) {}
 
   addMarker(lat:number, lon:number) {
     const marker = L.marker([lat, lon]);
     marker.addTo(this.map);
+    this.markers.push(marker);
   }
 
   addCircle(lat:number, lon:number, properties:any, radius:number) {
@@ -26,6 +26,7 @@ export class MapControllerService {
     });
     circle.bindPopup(this.popupService.makeCapitalPopup(properties));
     circle.addTo(this.map);
+    this.circles.push(circle);
   }
 
   addStatesLayer(geoJson: GeoJsonFeatures) {
@@ -38,17 +39,17 @@ export class MapControllerService {
         fillColor: '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
-        const latLng = this.shapeService.getLatLonByName(feature.properties.NAME);
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
-          click: (e) => (this.map.setView(new L.LatLng(latLng[0], latLng[1]),8))
+          click: (e) => (this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8))
         })
       }
     });
 
     this.map.addLayer(stateLayer);
     stateLayer.bringToBack();
+    this.layers.push(stateLayer);
   }
 
   highlightFeature(e: any) {
