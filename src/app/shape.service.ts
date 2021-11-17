@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { CapitalsFeature, GeoJsonFeatures, StatesFeature } from './feature';
+import { MapControllerService } from './map-controller.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ import { CapitalsFeature, GeoJsonFeatures, StatesFeature } from './feature';
 export class ShapeService {
   private capitals!: CapitalsFeature[];
 
-  constructor() {}
+  constructor(private mapController: MapControllerService) {}
 
   private highlightFeature(e: any) {
     e.target.setStyle({
@@ -30,16 +31,16 @@ export class ShapeService {
     });
   }
 
-  initStatesLayer(map: L.Map, capitals: CapitalsFeature[], states: StatesFeature[]) {
+  initStatesLayer(capitals: CapitalsFeature[], states: StatesFeature[]) {
     this.capitals = capitals;
     const geoJson: GeoJsonFeatures = {
       type: "FeatureCollection",
       features: states
     };
-    this.setStatesLayer(map, geoJson);
+    this.setStatesLayer(geoJson);
   }
 
-  setStatesLayer(map: L.Map, geoJson: GeoJsonFeatures) {
+  setStatesLayer(geoJson: GeoJsonFeatures) {
     const stateLayer = L.geoJSON(geoJson, {
       style: (feature) => ({
         weight: 3,
@@ -52,12 +53,12 @@ export class ShapeService {
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
-          click: (e) => (map.setView(this.getLatLonByName(feature.properties.NAME),8))
+          click: (e) => (this.mapController.map.setView(this.getLatLonByName(feature.properties.NAME),8))
         })
       )
     });
 
-    map.addLayer(stateLayer);
+    this.mapController.map.addLayer(stateLayer);
     stateLayer.bringToBack();
   }
 

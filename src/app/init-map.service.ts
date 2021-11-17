@@ -3,6 +3,7 @@ import { MarkerService } from './marker.service';
 import { ShapeService } from './shape.service';
 import { FeaturesDataService } from './features-data.service';
 import * as L from 'leaflet';
+import { MapControllerService } from './map-controller.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +14,11 @@ export class InitMapService {
   constructor(
     private markerService: MarkerService,
     private shapeService: ShapeService,
-    private featureService: FeaturesDataService
+    private featureService: FeaturesDataService,
+    private mapController: MapControllerService
   ) {}
 
-  public initMap(map : L.Map ) {
+  public initMap() {
     const iconRetinaUrl = 'assets/marker-icon-2x.png';
     const iconUrl = 'assets/marker-icon.png';
     const shadowUrl = 'assets/marker-shadow.png';
@@ -32,7 +34,7 @@ export class InitMapService {
     });
     L.Marker.prototype.options.icon = iconDefault;
 
-    map = L.map('map', {
+    this.mapController.map = L.map('map', {
       center: [ 39.8282, -98.5795 ],
       zoom: 3
     });
@@ -41,14 +43,14 @@ export class InitMapService {
       maxZoom: 18,
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+    }).addTo(this.mapController.map);
 
     this.featureService.capitals.subscribe(data => {
       const anyCapitals: any = data;
-      this.markerService.makeCapitalCircleMarkers(map, anyCapitals.features);
+      this.markerService.makeCapitalCircleMarkers(anyCapitals.features);
       this.featureService.states.subscribe(data => {
         const anyStates: any = data;
-        this.shapeService.initStatesLayer(map, anyCapitals.features, anyStates.features);
+        this.shapeService.initStatesLayer(anyCapitals.features, anyStates.features);
       });
     });
   }

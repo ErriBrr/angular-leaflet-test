@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 import { PopupService } from './popup.service';
 import { FeaturesDataService } from './features-data.service';
+import { MapControllerService } from './map-controller.service';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,11 @@ import { FeaturesDataService } from './features-data.service';
     BrowserModule,
     HttpClientModule
   ],
-  providers: [PopupService, FeaturesDataService],
+  providers: [
+    PopupService, 
+    FeaturesDataService,
+    MapControllerService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

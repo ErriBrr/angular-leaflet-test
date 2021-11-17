@@ -8,12 +8,11 @@ import { InitMapService } from '../init-map.service';
   styleUrls: ['./map.component.css']
 })
 export class MapComponent implements AfterViewInit {  
-  private map!: L.Map;
 
   constructor(public mapService: InitMapService) { }
 
   ngAfterViewInit(): void {
-    this.mapService.initMap(this.map);
+    this.mapService.initMap();
   }
 
 }
