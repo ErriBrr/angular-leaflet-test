@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class PopupService {
 
-  constructor() { }
+  constructor() {}
 
   makeCapitalPopup(data: any): string {
     return `

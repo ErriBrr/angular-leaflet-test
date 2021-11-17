@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MarkerService } from './marker.service';
-import * as L from 'leaflet';
 import { ShapeService } from './shape.service';
+import { FeaturesDataService } from './features-data.service';
+import * as L from 'leaflet';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,10 @@ export class InitMapService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   constructor(
-    private markerService: MarkerService
-  ) { }
+    private markerService: MarkerService,
+    private shapeService: ShapeService,
+    private featureService: FeaturesDataService
+  ) {}
 
   public initMap(map : L.Map ) {
     const iconRetinaUrl = 'assets/marker-icon-2x.png';
@@ -40,6 +43,13 @@ export class InitMapService {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    this.markerService.makeCapitalCircleMarkers(map);
+    this.featureService.capitals.subscribe(data => {
+      const anyCapitals: any = data;
+      this.markerService.makeCapitalCircleMarkers(map, anyCapitals.features);
+      this.featureService.states.subscribe(data => {
+        const anyStates: any = data;
+        this.shapeService.initStatesLayer(map, anyCapitals.features, anyStates.features);
+      });
+    });
   }
 }

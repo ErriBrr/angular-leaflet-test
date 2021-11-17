@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { CapitalsFeature, GeoJsonFeatures, StatesFeature } from './feature';
-import { FeaturesDataService } from './features-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +8,7 @@ import { FeaturesDataService } from './features-data.service';
 export class ShapeService {
   private capitals!: CapitalsFeature[];
 
-  constructor(
-    private featureService: FeaturesDataService
-  ) { 
-    
-}
+  constructor() {}
 
   private highlightFeature(e: any) {
     e.target.setStyle({
@@ -35,17 +30,13 @@ export class ShapeService {
     });
   }
 
-  initStatesLayer(map: L.Map, capitals: CapitalsFeature[]) {
+  initStatesLayer(map: L.Map, capitals: CapitalsFeature[], states: StatesFeature[]) {
     this.capitals = capitals;
-    this.featureService.getStates().subscribe({
-      next: (states) => {
-        const geoJson: GeoJsonFeatures = {
-          type: "FeatureCollection",
-          features: states
-        };
-        this.setStatesLayer(map, geoJson);
-      }
-    });
+    const geoJson: GeoJsonFeatures = {
+      type: "FeatureCollection",
+      features: states
+    };
+    this.setStatesLayer(map, geoJson);
   }
 
   setStatesLayer(map: L.Map, geoJson: GeoJsonFeatures) {
