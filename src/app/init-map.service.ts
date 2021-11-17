@@ -10,8 +10,7 @@ export class InitMapService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   constructor(
-    private markerService: MarkerService,
-    private shapeService: ShapeService
+    private markerService: MarkerService
   ) { }
 
   public initMap(map : L.Map ) {
@@ -42,8 +41,5 @@ export class InitMapService {
     }).addTo(map);
 
     this.markerService.makeCapitalCircleMarkers(map);
-    this.shapeService.getStateShapes().subscribe(states => {
-      this.shapeService.initStatesLayer(map, states);
-    });
   }
 }

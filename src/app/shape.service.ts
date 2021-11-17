@@ -1,13 +1,19 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
-import { MarkerService } from './marker.service';
+import { CapitalsFeature, GeoJsonFeatures, StatesFeature } from './feature';
+import { FeaturesDataService } from './features-data.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShapeService {
-  constructor(private http: HttpClient, private markerService: MarkerService) { }
+  private capitals!: CapitalsFeature[];
+
+  constructor(
+    private featureService: FeaturesDataService
+  ) { 
+    
+}
 
   private highlightFeature(e: any) {
     e.target.setStyle({
@@ -29,8 +35,21 @@ export class ShapeService {
     });
   }
 
-  initStatesLayer(map: L.Map, states: any) {
-    const stateLayer = L.geoJSON(states, {
+  initStatesLayer(map: L.Map, capitals: CapitalsFeature[]) {
+    this.capitals = capitals;
+    this.featureService.getStates().subscribe({
+      next: (states) => {
+        const geoJson: GeoJsonFeatures = {
+          type: "FeatureCollection",
+          features: states
+        };
+        this.setStatesLayer(map, geoJson);
+      }
+    });
+  }
+
+  setStatesLayer(map: L.Map, geoJson: GeoJsonFeatures) {
+    const stateLayer = L.geoJSON(geoJson, {
       style: (feature) => ({
         weight: 3,
         opacity: 0.5,
@@ -42,7 +61,7 @@ export class ShapeService {
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
-          click: (e) => (map.setView(this.getLatLon(feature.properties.NAME),8))
+          click: (e) => (map.setView(this.getLatLonByName(feature.properties.NAME),8))
         })
       )
     });
@@ -51,17 +70,12 @@ export class ShapeService {
     stateLayer.bringToBack();
   }
 
-  getStateShapes() {
-    return this.http.get('/assets/data/gz_2010_us_040_00_5m.json');
-  }
-
   private filterByName(name: string): any {
-    const states = this.markerService.getCapitals();
-    const state = states.filter((state: { properties: { state: string; }; }) => state.properties.state === name);
+    const state = this.capitals.filter(c => c.properties.state === name);
     return state[0];
   }
 
-  private getLatLon(name: string): L.LatLng {
+  private getLatLonByName(name: string): L.LatLng {
     const state = this.filterByName(name);
     return new L.LatLng(state.geometry.coordinates[1], state.geometry.coordinates[0]);
   }
