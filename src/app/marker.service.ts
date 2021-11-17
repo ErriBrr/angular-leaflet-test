@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as L from 'leaflet';
-import { PopupService } from './popup.service';
 import { CapitalsFeature } from './feature';
 import { MapControllerService } from './map-controller.service';
 
@@ -9,10 +7,7 @@ import { MapControllerService } from './map-controller.service';
 })
 export class MarkerService {
 
-  constructor(
-    private popupService: PopupService,
-    private mapController: MapControllerService
-  ) {}
+  constructor(private mapController: MapControllerService) {}
 
   static scaledRadius(val: number, maxVal: number): number {
     return 20 * (val / maxVal);
@@ -22,8 +17,7 @@ export class MarkerService {
     capitals.forEach(c => {
       const lon = c.geometry.coordinates[0];
       const lat = c.geometry.coordinates[1];
-      const marker = L.marker([lat, lon]);
-      marker.addTo(this.mapController.map);
+      this.mapController.addMarker(lat, lon);
     })
   }
 
@@ -33,11 +27,7 @@ export class MarkerService {
       console.log(c);
       const lon = c.geometry.coordinates[0];
       const lat = c.geometry.coordinates[1];
-      const circle = L.circleMarker([lat, lon], {
-        radius: MarkerService.scaledRadius(c.properties.population, maxPop)
-      });
-      circle.bindPopup(this.popupService.makeCapitalPopup(c.properties));
-      circle.addTo(this.mapController.map);
+      this.mapController.addCircle(lat, lon, c.properties, MarkerService.scaledRadius(c.properties.population, maxPop))
     });
   }
 }
