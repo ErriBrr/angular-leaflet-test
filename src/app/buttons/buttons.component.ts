@@ -31,12 +31,7 @@ export class ButtonsComponent implements OnInit {
     })
   }
 
-  deleteMapElt(mapElt: mapElt): void {
-    const id = this.mapElements.findIndex(e => e.elt === mapElt);
-    if (id){
-      this.mapController.removeElement(mapElt);
-      this.mapElements.splice(id!, 1);
-    }
+  hideOrShowMapElt(mapElt: mapElt): void {
+    this.mapController.hideOrShowElement(mapElt.elt);
   }
-
 }

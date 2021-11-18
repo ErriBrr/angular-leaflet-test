@@ -104,8 +104,11 @@ export class MapControllerService {
     });
   }
 
-  removeElement(e: any) {
-    console.log(e);
-    e.removeFrom(this.map);
+  hideOrShowElement(e: any) {
+    if (this.map.hasLayer(e)){
+      e.removeFrom(this.map);
+    } else {
+      e.addTo(this.map);
+    }
   }
 }
