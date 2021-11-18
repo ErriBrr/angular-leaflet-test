@@ -46,7 +46,7 @@ export class MapControllerService {
   addMarker(lat:number, lon:number) {
     const marker = L.marker([lat, lon]);
     marker.addTo(this.map);
-    this.addMapLayer(marker, 'marker', this.map);
+    this.addMapLayer(marker, 'marker');
   }
 
   addCircle(lat:number, lon:number, properties:any, radius:number) {
@@ -55,7 +55,7 @@ export class MapControllerService {
     });
     circle.bindPopup(this.popupService.makeCapitalPopup(properties));
     circle.addTo(this.map);
-    this.addMapLayer(circle, properties.name, this.map);
+    this.addMapLayer(circle, properties.name);
   }
 
   addStatesLayer(geoJson: GeoJsonFeatures) {
@@ -68,7 +68,7 @@ export class MapControllerService {
         fillColor: '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
-        //this.addMapLayer(layer, feature.properties.NAME, stateLayer);
+        this.addMapLayer(layer, feature.properties.NAME);
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
@@ -81,7 +81,7 @@ export class MapControllerService {
 
     this.map.addLayer(stateLayer);
     stateLayer.bringToBack();
-    this.addMapLayer(stateLayer, 'layer', this.map);
+    this.addMapLayer(stateLayer, 'layer');
   }
 
   highlightFeature(e: any) {
@@ -105,20 +105,17 @@ export class MapControllerService {
   }
 
   hideOrShowElement(e: MapLayer) {
-    const eltLayer = e.layer;
-    const parentLayer = e.parentLayer;
-    if (parentLayer.hasLayer(eltLayer)){
-      eltLayer.removeFrom(parentLayer);
+    if (this.map.hasLayer(e.layer)){
+      e.layer.removeFrom(this.map);
     } else {
-      eltLayer.addTo(parentLayer);
+      e.layer.addTo(this.map);
     }
   }
 
-  addMapLayer(layer: any, name: string, parentLayer: any) {
+  addMapLayer(layer: any, name: string) {
     this.mapLayers.next({
       layer: layer,
-      name: name,
-      parentLayer: parentLayer
+      name: name
     });
   }
 }
