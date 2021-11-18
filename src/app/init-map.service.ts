@@ -14,7 +14,6 @@ export class InitMapService {
   constructor(
     private markerService: MarkerService,
     private shapeService: ShapeService,
-    private featureService: FeaturesDataService,
     private mapController: MapControllerService
   ) {}
 
@@ -45,13 +44,7 @@ export class InitMapService {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this.mapController.map);
 
-    this.featureService.capitals.subscribe(data => {
-      const anyCapitals: any = data;
-      this.markerService.makeCapitalCircleMarkers(anyCapitals.features);
-      this.featureService.states.subscribe(data => {
-        const anyStates: any = data;
-        this.shapeService.initStatesLayer(anyCapitals.features, anyStates.features);
-      });
-    });
+    this.markerService.makeCapitalCircleMarkers();
+    this.shapeService.initStatesLayer();
   }
 }
