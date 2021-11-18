@@ -73,6 +73,7 @@ export class MapControllerService {
           mouseout: (e) => (this.resetFeature(e)),
           click: (e) => {
             this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8);
+            // stateLayer.removeFrom(this.map);
             layer.removeFrom(this.map);
           }
         })
