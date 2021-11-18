@@ -9,11 +9,13 @@ import { FeaturesDataService } from './features-data.service';
 import { MapControllerService } from './map-controller.service';
 import { ShapeService } from './shape.service';
 import { MarkerService } from './marker.service';
+import { ButtonsComponent } from './buttons/buttons.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MapComponent
+    MapComponent,
+    ButtonsComponent
   ],
   imports: [
     BrowserModule,

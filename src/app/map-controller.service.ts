@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { PopupService } from './popup.service';
 import * as L from 'leaflet';
 import { GeoJsonFeatures } from './feature';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +10,9 @@ import { GeoJsonFeatures } from './feature';
 export class MapControllerService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   map!: L.Map;
-  markers: L.Marker[] = [];
-  circles: L.CircleMarker[] = [];
-  layers: L.Layer[] = [];
+  markers = new Subject<L.Marker>();
+  circles = new Subject<L.CircleMarker>();
+  layers = new Subject<L.Layer>();
 
   constructor(private popupService: PopupService) {}
 
@@ -46,7 +47,7 @@ export class MapControllerService {
   addMarker(lat:number, lon:number) {
     const marker = L.marker([lat, lon]);
     marker.addTo(this.map);
-    this.markers.push(marker);
+    this.markers.next(marker);
   }
 
   addCircle(lat:number, lon:number, properties:any, radius:number) {
@@ -55,7 +56,7 @@ export class MapControllerService {
     });
     circle.bindPopup(this.popupService.makeCapitalPopup(properties));
     circle.addTo(this.map);
-    this.circles.push(circle);
+    this.circles.next(circle);
   }
 
   addStatesLayer(geoJson: GeoJsonFeatures) {
@@ -73,8 +74,6 @@ export class MapControllerService {
           mouseout: (e) => (this.resetFeature(e)),
           click: (e) => {
             this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8);
-            // stateLayer.removeFrom(this.map);
-            layer.removeFrom(this.map);
           }
         })
       }
@@ -82,7 +81,7 @@ export class MapControllerService {
 
     this.map.addLayer(stateLayer);
     stateLayer.bringToBack();
-    this.layers.push(stateLayer);
+    this.layers.next(stateLayer);
   }
 
   highlightFeature(e: any) {
@@ -103,5 +102,10 @@ export class MapControllerService {
       fillOpacity: 0.8,
       fillColor: '#6DB65B'
     });
+  }
+
+  removeElement(e: any) {
+    console.log(e);
+    e.removeFrom(this.map);
   }
 }
