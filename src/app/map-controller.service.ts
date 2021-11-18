@@ -3,6 +3,7 @@ import { PopupService } from './popup.service';
 import * as L from 'leaflet';
 import { GeoJsonFeatures } from './feature';
 import { Subject } from 'rxjs';
+import { MapLayer } from './map-layer';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +11,7 @@ import { Subject } from 'rxjs';
 export class MapControllerService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   map!: L.Map;
-  markers = new Subject<L.Marker>();
-  circles = new Subject<L.CircleMarker>();
-  layers = new Subject<L.Layer>();
+  mapLayers = new Subject<MapLayer>();
 
   constructor(private popupService: PopupService) {}
 
@@ -47,7 +46,7 @@ export class MapControllerService {
   addMarker(lat:number, lon:number) {
     const marker = L.marker([lat, lon]);
     marker.addTo(this.map);
-    this.markers.next(marker);
+    this.addMapLayer(marker, 'marker', this.map);
   }
 
   addCircle(lat:number, lon:number, properties:any, radius:number) {
@@ -56,7 +55,7 @@ export class MapControllerService {
     });
     circle.bindPopup(this.popupService.makeCapitalPopup(properties));
     circle.addTo(this.map);
-    this.circles.next(circle);
+    this.addMapLayer(circle, properties.name, this.map);
   }
 
   addStatesLayer(geoJson: GeoJsonFeatures) {
@@ -69,6 +68,7 @@ export class MapControllerService {
         fillColor: '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
+        //this.addMapLayer(layer, feature.properties.NAME, stateLayer);
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
@@ -81,7 +81,7 @@ export class MapControllerService {
 
     this.map.addLayer(stateLayer);
     stateLayer.bringToBack();
-    this.layers.next(stateLayer);
+    this.addMapLayer(stateLayer, 'layer', this.map);
   }
 
   highlightFeature(e: any) {
@@ -104,11 +104,21 @@ export class MapControllerService {
     });
   }
 
-  hideOrShowElement(e: any) {
-    if (this.map.hasLayer(e)){
-      e.removeFrom(this.map);
+  hideOrShowElement(e: MapLayer) {
+    const eltLayer = e.layer;
+    const parentLayer = e.parentLayer;
+    if (parentLayer.hasLayer(eltLayer)){
+      eltLayer.removeFrom(parentLayer);
     } else {
-      e.addTo(this.map);
+      eltLayer.addTo(parentLayer);
     }
+  }
+
+  addMapLayer(layer: any, name: string, parentLayer: any) {
+    this.mapLayers.next({
+      layer: layer,
+      name: name,
+      parentLayer: parentLayer
+    });
   }
 }

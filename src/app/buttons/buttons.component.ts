@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MapControllerService } from '../map-controller.service';
-
-interface mapElt {
-  elt: any,
-  type: string
-}
+import { MapLayer } from '../map-layer';
 
 @Component({
   selector: 'app-buttons',
@@ -12,26 +8,21 @@ interface mapElt {
   styleUrls: ['./buttons.component.css']
 })
 export class ButtonsComponent implements OnInit {
-  mapElements: mapElt[];
+  mapElements: MapLayer[];
 
   constructor(private mapController: MapControllerService) {
     this.mapElements = [];
-    this.mapController.markers.subscribe(elt => this.addMapElt(elt, 'marker'));
-    this.mapController.circles.subscribe(elt => this.addMapElt(elt, 'circle'));
-    this.mapController.layers.subscribe(elt => this.addMapElt(elt, 'layer'));
+    this.mapController.mapLayers.subscribe(elt => this.addMapElt(elt));
   }
 
   ngOnInit(): void {
   }
 
-  addMapElt(elt: any, type: string){
-    this.mapElements.push({
-      elt: elt,
-      type: type
-    })
+  addMapElt(elt: MapLayer){
+    this.mapElements.push(elt)
   }
 
-  hideOrShowMapElt(mapElt: mapElt): void {
-    this.mapController.hideOrShowElement(mapElt.elt);
+  hideOrShowMapElt(mapElt: MapLayer): void {
+    this.mapController.hideOrShowElement(mapElt);
   }
 }
