@@ -2,26 +2,21 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.5.
 
-## Development server
+## Summary
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+This project is the continuation of this DigitalOcean tutorial about Leaflet with Angular :
+part 1/4 https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
+part 2/4 https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-marker-service
+part 3/4 https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-popup-service
+part 4/4 https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
 
-## Code scaffolding
+## Enhancement
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1) Zoom to a capital when click on a state
+2) Delete a state layer
+3) List all layers and interact with them
+4) Hide and show all layers
 
-## Build
+## Lessons
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+All element on the map is an independent layer. Parent layers are in fact a list of features which are independent layers. 
