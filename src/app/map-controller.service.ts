@@ -7,12 +7,41 @@ import { GeoJsonFeatures } from './feature';
   providedIn: 'root'
 })
 export class MapControllerService {
+  private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   map!: L.Map;
   markers: L.Marker[] = [];
   circles: L.CircleMarker[] = [];
   layers: L.Layer[] = [];
 
   constructor(private popupService: PopupService) {}
+
+  init() {
+    this.map = L.map('map', {
+      center: [ 39.8282, -98.5795 ],
+      zoom: 3
+    });
+
+    const iconRetinaUrl = 'assets/marker-icon-2x.png';
+    const iconUrl = 'assets/marker-icon.png';
+    const shadowUrl = 'assets/marker-shadow.png';
+    const iconDefault = L.icon({
+      iconRetinaUrl,
+      iconUrl,
+      shadowUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      tooltipAnchor: [16, -28],
+      shadowSize: [41, 41]
+    });
+    L.Marker.prototype.options.icon = iconDefault;
+
+    L.tileLayer(this.urlTiles, {
+      maxZoom: 18,
+      minZoom: 3,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(this.map);
+  }
 
   addMarker(lat:number, lon:number) {
     const marker = L.marker([lat, lon]);
@@ -42,7 +71,10 @@ export class MapControllerService {
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
-          click: (e) => (this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8))
+          click: (e) => {
+            this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8);
+            layer.removeFrom(this.map);
+          }
         })
       }
     });
