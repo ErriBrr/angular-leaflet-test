@@ -12,6 +12,7 @@ export class MapControllerService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   map!: L.Map;
   mapLayers = new Subject<MapLayer>();
+  private bringToBackList: any[] = [];
 
   constructor(private popupService: PopupService) {}
 
@@ -69,6 +70,7 @@ export class MapControllerService {
       }),
       onEachFeature: (feature, layer) => {
         this.addMapLayer(layer, feature.properties.NAME);
+        this.bringToBackList.push(layer);
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
@@ -81,6 +83,7 @@ export class MapControllerService {
 
     this.map.addLayer(stateLayer);
     stateLayer.bringToBack();
+    this.bringToBackList.push(stateLayer);
     this.addMapLayer(stateLayer, 'layer');
   }
 
@@ -109,6 +112,9 @@ export class MapControllerService {
       e.layer.removeFrom(this.map);
     } else {
       e.layer.addTo(this.map);
+      if (this.bringToBackList.find(elt => elt === e.layer)) {
+        e.layer.bringToBack();
+      }
     }
   }
 
