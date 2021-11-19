@@ -45,4 +45,4 @@ testem.log
 Thumbs.db
 
 # data
-/src/assets/data
+/src/assets/data/gz_2010_us_040_00_5m.json

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class FeaturesDataService {
   private usaCapitalsDataUrl: string = '/assets/data/usa-capitals.geojson';
-  private usaStatesDataUrl: string = '/assets/data/gz_2010_us_040_00_5m.json';
+  private usaStatesDataUrl: string = '/assets/data/gz_2010_us_040_00_20m.json';
   
   private euroCapitalsDataUrl: string = '/assets/data/european-capitals.geojson';
   private euroStatesDataUrl: string = '/assets/data/europe.geojson';
