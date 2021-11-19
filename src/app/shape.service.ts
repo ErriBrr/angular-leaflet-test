@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CapitalsFeature, GeoJsonFeatures, StatesFeature } from './feature';
+import { USACapitalsFeature, GeoJsonFeatures, USAStatesFeature, EuropeanStatesFeature } from './feature';
 import { FeaturesDataService } from './features-data.service';
 import { MapControllerService } from './map-controller.service';
 
@@ -7,7 +7,7 @@ import { MapControllerService } from './map-controller.service';
   providedIn: 'root'
 })
 export class ShapeService {
-  private capitals!: CapitalsFeature[];
+  private usaCapitals!: USACapitalsFeature[];
 
   constructor(
     private mapController: MapControllerService,
@@ -15,10 +15,10 @@ export class ShapeService {
   ) {}
 
   initStatesLayer() {
-    this.featureService.capitals.subscribe((c:any) => {
-      this.capitals = c.features;
-      this.featureService.states.subscribe((data:any) => {
-        const states: StatesFeature[] = data.features;
+    this.featureService.usaCapitals.subscribe((c:any) => {
+      this.usaCapitals = c.features;
+      this.featureService.usaStates.subscribe((data:any) => {
+        const states: USAStatesFeature[] = data.features;
         states.forEach(x => {
           const latLng = this.getLatLonByName(x.properties.NAME);
           if (latLng) {
@@ -32,10 +32,21 @@ export class ShapeService {
         this.mapController.addStatesLayer(geoJson);
       });
     });
+    this.featureService.euroStates.subscribe((data:any) => {
+      const states: EuropeanStatesFeature[] = data.features;
+      states.forEach(x => {
+        x.properties.center = [x.properties.LAT, x.properties.LON];
+      });
+      const geoJson: GeoJsonFeatures = {
+        type: "FeatureCollection",
+        features: states
+      };
+      this.mapController.addStatesLayer(geoJson);
+    });
   }
 
   private filterByName(name: string): any {
-    const state = this.capitals.filter(c => c.properties.state === name);
+    const state = this.usaCapitals.filter(c => c.properties.state === name);
     return state[0];
   }
 

@@ -16,7 +16,7 @@ export class InitMapService {
 
   public initMap() {
     this.mapController.init();
-    this.markerService.makeCapitalCircleMarkers();
+    this.markerService.init();
     this.shapeService.initStatesLayer();
   }
 }

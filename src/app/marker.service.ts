@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CapitalsFeature } from './feature';
+import { USACapitalsFeature, EuropeanCapitalsFeature } from './feature';
 import { FeaturesDataService } from './features-data.service';
 import { MapControllerService } from './map-controller.service';
 
@@ -17,26 +17,33 @@ export class MarkerService {
     return 20 * (val / maxVal);
   }
 
-  makeCapitalMarkers(): void {
-    this.featureService.capitals.subscribe((data:any) => {
-      const capitals: CapitalsFeature[] = data.features;
-      capitals.forEach(c => {
-        const lon = c.geometry.coordinates[0];
-        const lat = c.geometry.coordinates[1];
-        this.mapController.addMarker(lat, lon);
-      })
+  init(): void {
+    this.featureService.usaCapitals.subscribe((data:any) => {
+      const capitals: USACapitalsFeature[] = data.features;
+      this.makeCapitalCircleMarkers(capitals);
+    });
+    this.featureService.euroCapitals.subscribe((data:any) => {
+      const capitals: EuropeanCapitalsFeature[] = data.features;
+      this.makeCapitalMarkers(capitals);
     });
   }
 
-  makeCapitalCircleMarkers(): void {
-    this.featureService.capitals.subscribe((data:any) => {
-      const capitals: CapitalsFeature[] = data.features;
-      const maxPop = Math.max(...capitals.map(x => x.properties.population), 0);
-      capitals.forEach(c => {
+  makeCapitalMarkers(capitals: USACapitalsFeature[] | EuropeanCapitalsFeature[] ): void {
+    capitals.forEach(c => {
+      const lon = c.geometry.coordinates[0];
+      const lat = c.geometry.coordinates[1];
+      this.mapController.addMarker(lat, lon);
+    })
+  }
+
+  makeCapitalCircleMarkers(usaCapitals: USACapitalsFeature[] ): void {
+    if (usaCapitals) {
+      const maxPop = Math.max(...usaCapitals.map(x => x.properties.population), 0);
+      usaCapitals.forEach(c => {
         const lon = c.geometry.coordinates[0];
         const lat = c.geometry.coordinates[1];
         this.mapController.addCircle(lat, lon, c.properties, MarkerService.scaledRadius(c.properties.population, maxPop))
       });
-    });
+    }
   }
 }
