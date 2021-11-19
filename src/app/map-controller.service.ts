@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { PopupService } from './popup.service';
 import * as L from 'leaflet';
 import { GeoJsonFeatures } from './feature';
-import { Subject } from 'rxjs';
 import { MapLayer } from './map-layer';
+import { CONTINENTS } from './continents';
 
 @Injectable({
   providedIn: 'root'
@@ -104,10 +104,10 @@ export class MapControllerService {
   }
 
   hideOrShowContinent(continent: string) {
-    if (continent === "europe") {
+    if (continent === CONTINENTS.e) {
       this.euroMapLayers.forEach(e => this.hideOrShowElement(e));
     }
-    if (continent === "america") {
+    if (continent === CONTINENTS.a) {
       this.usaMapLayers.forEach(e => this.hideOrShowElement(e));
     }
   }
@@ -124,13 +124,13 @@ export class MapControllerService {
   }
 
   addMapLayer(layer: any, name: string, continent:string) {
-    if (continent === "america") {
+    if (continent === CONTINENTS.a) {
       this.usaMapLayers.push({
         layer: layer,
         name: name
       });
     }
-    if (continent === "europe") {
+    if (continent === CONTINENTS.e) {
       this.euroMapLayers.push({
         layer: layer,
         name: name

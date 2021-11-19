@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MapControllerService } from '../map-controller.service';
+import { CONTINENTS } from '../continents';
 
 @Component({
   selector: 'app-buttons',
@@ -7,7 +8,7 @@ import { MapControllerService } from '../map-controller.service';
   styleUrls: ['./buttons.component.css']
 })
 export class ButtonsComponent implements OnInit {
-  continents: string[] = ['america', 'europe']
+  continents = [CONTINENTS.a,CONTINENTS.e];
   select: string = '';
 
   constructor(private mapController: MapControllerService) {

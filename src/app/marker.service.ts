@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { USACapitalsFeature, EuropeanCapitalsFeature } from './feature';
 import { FeaturesDataService } from './features-data.service';
 import { MapControllerService } from './map-controller.service';
+import { CONTINENTS } from './continents';
 
 @Injectable({
   providedIn: 'root'
@@ -20,11 +21,11 @@ export class MarkerService {
   init(): void {
     this.featureService.usaCapitals.subscribe((data:any) => {
       const capitals: USACapitalsFeature[] = data.features;
-      this.makeCapitalCircleMarkers(capitals,"america");
+      this.makeCapitalCircleMarkers(capitals, CONTINENTS.a);
     });
     this.featureService.euroCapitals.subscribe((data:any) => {
       const capitals: EuropeanCapitalsFeature[] = data.features;
-      this.makeCapitalMarkers(capitals, "europe");
+      this.makeCapitalMarkers(capitals, CONTINENTS.e);
     });
   }
 

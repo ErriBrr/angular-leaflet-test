@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CONTINENTS } from './continents';
 import { USACapitalsFeature, GeoJsonFeatures, USAStatesFeature, EuropeanStatesFeature } from './feature';
 import { FeaturesDataService } from './features-data.service';
 import { MapControllerService } from './map-controller.service';
@@ -29,7 +30,7 @@ export class ShapeService {
           type: "FeatureCollection",
           features: states
         };
-        this.mapController.addStatesLayer(geoJson, "america");
+        this.mapController.addStatesLayer(geoJson, CONTINENTS.a);
       });
     });
     this.featureService.euroStates.subscribe((data:any) => {
@@ -41,7 +42,7 @@ export class ShapeService {
         type: "FeatureCollection",
         features: states
       };
-      this.mapController.addStatesLayer(geoJson, "europe");
+      this.mapController.addStatesLayer(geoJson, CONTINENTS.e);
     });
   }
 
