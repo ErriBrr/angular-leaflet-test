@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MapControllerService } from '../map-controller.service';
-import { MapLayer } from '../map-layer';
+import { CONTINENTS, FIRST } from '../continents';
 
 @Component({
   selector: 'app-buttons',
@@ -8,21 +8,22 @@ import { MapLayer } from '../map-layer';
   styleUrls: ['./buttons.component.css']
 })
 export class ButtonsComponent implements OnInit {
-  mapElements: MapLayer[];
+  continents = [CONTINENTS.a,CONTINENTS.e];
+  select: string = FIRST;
 
   constructor(private mapController: MapControllerService) {
-    this.mapElements = [];
-    this.mapController.mapLayers.subscribe(elt => this.addMapElt(elt));
   }
 
   ngOnInit(): void {
   }
 
-  addMapElt(elt: MapLayer){
-    this.mapElements.push(elt)
-  }
-
-  hideOrShowMapElt(mapElt: MapLayer): void {
-    this.mapController.hideOrShowElement(mapElt);
+  hideOrShow(continent: string): void {
+    // remove the previous select continent
+    if (this.select != "") {
+      this.mapController.hideOrShowContinent(this.select);
+    }
+    this.select = continent;
+    // show the newest select continent
+    this.mapController.hideOrShowContinent(this.select);
   }
 }
