@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CONTINENTS } from './continents';
 import { USACapitalsFeature, GeoJsonFeatures, USAStatesFeature, EuropeanStatesFeature } from './feature';
 import { FeaturesDataService } from './features-data.service';
@@ -9,6 +10,7 @@ import { MapControllerService } from './map-controller.service';
 })
 export class ShapeService {
   private usaCapitals!: USACapitalsFeature[];
+  readyFlag = new Subject<boolean>();
 
   constructor(
     private mapController: MapControllerService,
@@ -31,6 +33,7 @@ export class ShapeService {
           features: states
         };
         this.mapController.addStatesLayer(geoJson, CONTINENTS.a);
+        this.readyFlag.next(true);
       });
     });
     this.featureService.euroStates.subscribe((data:any) => {

@@ -9,7 +9,7 @@ import { CONTINENTS } from '../continents';
 })
 export class ButtonsComponent implements OnInit {
   continents = [CONTINENTS.a,CONTINENTS.e];
-  select: string = '';
+  select: string = CONTINENTS.a;
 
   constructor(private mapController: MapControllerService) {
   }
