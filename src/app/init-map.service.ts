@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MarkerService } from './marker.service';
 import { ShapeService } from './shape.service';
 import { MapControllerService } from './map-controller.service';
-import { CONTINENTS } from './continents';
+import { FIRST } from './continents';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +19,6 @@ export class InitMapService {
     this.mapController.init();
     this.markerService.init();
     this.shapeService.initStatesLayer();
-    this.shapeService.readyFlag.subscribe(b => this.mapController.hideOrShowContinent(CONTINENTS.a));
+    this.shapeService.readyFlag.subscribe(b => this.mapController.hideOrShowContinent(FIRST));
   }
 }

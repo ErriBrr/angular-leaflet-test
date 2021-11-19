@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MapControllerService } from '../map-controller.service';
-import { CONTINENTS } from '../continents';
+import { CONTINENTS, FIRST } from '../continents';
 
 @Component({
   selector: 'app-buttons',
@@ -9,7 +9,7 @@ import { CONTINENTS } from '../continents';
 })
 export class ButtonsComponent implements OnInit {
   continents = [CONTINENTS.a,CONTINENTS.e];
-  select: string = CONTINENTS.a;
+  select: string = FIRST;
 
   constructor(private mapController: MapControllerService) {
   }
