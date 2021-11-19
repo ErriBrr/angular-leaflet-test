@@ -8,6 +8,7 @@ import { MapControllerService } from '../map-controller.service';
 })
 export class ButtonsComponent implements OnInit {
   continents: string[] = ['america', 'europe']
+  select: string = '';
 
   constructor(private mapController: MapControllerService) {
   }
@@ -16,6 +17,12 @@ export class ButtonsComponent implements OnInit {
   }
 
   hideOrShow(continent: string): void {
-    this.mapController.hideOrShowContinent(continent);
+    // remove the previous select continent
+    if (this.select != "") {
+      this.mapController.hideOrShowContinent(this.select);
+    }
+    this.select = continent;
+    // show the newest select continent
+    this.mapController.hideOrShowContinent(this.select);
   }
 }

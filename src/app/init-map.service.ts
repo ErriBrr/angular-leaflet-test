@@ -18,6 +18,5 @@ export class InitMapService {
     this.mapController.init();
     this.markerService.init();
     this.shapeService.initStatesLayer();
-    this.mapController.hideOrShowContinent('america');
   }
 }

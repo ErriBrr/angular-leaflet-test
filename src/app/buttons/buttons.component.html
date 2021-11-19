@@ -1,3 +1,3 @@
-<select>
-    <option *ngFor="let c of this.continents" mat-icon-button (click)="hideOrShow(c)">{{c}}</option>
+<select #t (click)="hideOrShow(t.value)">
+    <option *ngFor="let c of this.continents" value="{{c}}">{{c}}</option>
 </select>
