@@ -11,7 +11,8 @@ import { MapLayer } from './map-layer';
 export class MapControllerService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   map!: L.Map;
-  mapLayers = new Subject<MapLayer>();
+  usaMapLayers: MapLayer[] = [];
+  euroMapLayers: MapLayer[] = [];
   private bringToBackList: any[] = [];
 
   constructor(private popupService: PopupService) {}
@@ -44,22 +45,20 @@ export class MapControllerService {
     }).addTo(this.map);
   }
 
-  addMarker(lat:number, lon:number) {
+  addMarker(lat:number, lon:number, continent:string) {
     const marker = L.marker([lat, lon]);
-    marker.addTo(this.map);
-    this.addMapLayer(marker, 'marker');
+    this.addMapLayer(marker, 'marker', continent);
   }
 
-  addCircle(lat:number, lon:number, properties:any, radius:number) {
+  addCircle(lat:number, lon:number, properties:any, radius:number, continent:string) {
     const circle = L.circleMarker([lat, lon], {
       radius: radius
     });
     circle.bindPopup(this.popupService.makeCapitalPopup(properties));
-    circle.addTo(this.map);
-    this.addMapLayer(circle, properties.name);
+    this.addMapLayer(circle, properties.name, continent);
   }
 
-  addStatesLayer(geoJson: GeoJsonFeatures) {
+  addStatesLayer(geoJson: GeoJsonFeatures, continent:string) {
     const stateLayer = L.geoJSON(geoJson, {
       style: (feature) => ({
         weight: 3,
@@ -69,7 +68,6 @@ export class MapControllerService {
         fillColor: '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
-        this.addMapLayer(layer, feature.properties.NAME);
         this.bringToBackList.push(layer);
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
@@ -81,10 +79,8 @@ export class MapControllerService {
       }
     });
 
-    this.map.addLayer(stateLayer);
-    stateLayer.bringToBack();
     this.bringToBackList.push(stateLayer);
-    this.addMapLayer(stateLayer, 'layer');
+    this.addMapLayer(stateLayer, 'layer', continent);
   }
 
   highlightFeature(e: any) {
@@ -107,6 +103,15 @@ export class MapControllerService {
     });
   }
 
+  hideOrShowContinent(continent: string) {
+    if (continent === "europe") {
+      this.euroMapLayers.forEach(e => this.hideOrShowElement(e));
+    }
+    if (continent === "america") {
+      this.usaMapLayers.forEach(e => this.hideOrShowElement(e));
+    }
+  }
+
   hideOrShowElement(e: MapLayer) {
     if (this.map.hasLayer(e.layer)){
       e.layer.removeFrom(this.map);
@@ -118,10 +123,18 @@ export class MapControllerService {
     }
   }
 
-  addMapLayer(layer: any, name: string) {
-    this.mapLayers.next({
-      layer: layer,
-      name: name
-    });
+  addMapLayer(layer: any, name: string, continent:string) {
+    if (continent === "america") {
+      this.usaMapLayers.push({
+        layer: layer,
+        name: name
+      });
+    }
+    if (continent === "europe") {
+      this.euroMapLayers.push({
+        layer: layer,
+        name: name
+      });
+    }
   }
 }

@@ -29,7 +29,7 @@ export class ShapeService {
           type: "FeatureCollection",
           features: states
         };
-        this.mapController.addStatesLayer(geoJson);
+        this.mapController.addStatesLayer(geoJson, "america");
       });
     });
     this.featureService.euroStates.subscribe((data:any) => {
@@ -41,7 +41,7 @@ export class ShapeService {
         type: "FeatureCollection",
         features: states
       };
-      this.mapController.addStatesLayer(geoJson);
+      this.mapController.addStatesLayer(geoJson, "europe");
     });
   }
 
