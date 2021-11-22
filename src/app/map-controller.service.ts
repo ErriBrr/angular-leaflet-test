@@ -19,15 +19,19 @@ export class MapControllerService {
 
   constructor(private popupService: PopupService) {}
 
-  getColor(feature: any) {
+  getFeatureColor(feature: any) {
     const density = feature.properties.POP2005 / feature.properties.AREA;
-    return density > 1000 ? '#800026' :
-           density > 500  ? '#BD0026' :
-           density > 200  ? '#E31A1C' :
-           density > 100  ? '#FC4E2A' :
-           density > 50   ? '#FD8D3C' :
-           density > 20   ? '#FEB24C' :
-           density > 10   ? '#FED976' :
+    return this.getDensityColor(density);
+  }
+
+  getDensityColor(d: number) {
+    return d > 1000 ? '#800026' :
+           d > 500  ? '#BD0026' :
+           d > 200  ? '#E31A1C' :
+           d > 100  ? '#FC4E2A' :
+           d > 50   ? '#FD8D3C' :
+           d > 20   ? '#FEB24C' :
+           d > 10   ? '#FED976' :
                       '#FFEDA0';
   }
 
@@ -67,6 +71,19 @@ export class MapControllerService {
       "UE capitals": this.euroMarkersLayers
     };
     L.control.layers(continents, capitals).addTo(this.map);
+
+    const legend = new L.Control({position: 'bottomright'});
+    legend.onAdd = (map) => {
+      const div = L.DomUtil.create('div', 'info legend');
+      const grades = [0, 10, 20, 50, 100, 200, 500, 1000];
+      for (var i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+              '<i style="background:' + this.getDensityColor(grades[i] + 1) + '"></i> ' +
+              grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+      }
+      return div;
+    };
+    legend.addTo(this.map);
   }
 
   addMarker(lat:number, lon:number, continent:string) {
@@ -90,7 +107,7 @@ export class MapControllerService {
         opacity: 0.5,
         color: '#008f68',
         fillOpacity: 0.8,
-        fillColor: continent === CONTINENTS.e ? this.getColor(feature!) : '#6DB65B'
+        fillColor: continent === CONTINENTS.e ? this.getFeatureColor(feature!) : '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
         layer.on({
