@@ -50,7 +50,11 @@ export class MapControllerService {
       "USA": this.usaMapLayers,
       "UE": this.euroMapLayers
     };
-    L.control.layers(continents).addTo(this.map);
+    const capitals = {
+      "USA capitals": this.usaMarkersLayers,
+      "UE capitals": this.euroMarkersLayers
+    };
+    L.control.layers(continents, capitals).addTo(this.map);
   }
 
   addMarker(lat:number, lon:number, continent:string) {
