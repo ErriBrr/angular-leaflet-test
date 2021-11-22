@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { PopupService } from './popup.service';
 import * as L from 'leaflet';
 import { GeoJsonFeatures } from './feature';
-import { MapLayer } from './map-layer';
 import { CONTINENTS } from './continents';
 
 @Injectable({
@@ -46,6 +45,12 @@ export class MapControllerService {
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this.map);
+
+    const continents = {
+      "USA": this.usaMapLayers,
+      "UE": this.euroMapLayers
+    };
+    L.control.layers(continents).addTo(this.map);
   }
 
   addMarker(lat:number, lon:number, continent:string) {
