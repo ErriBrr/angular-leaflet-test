@@ -10,14 +10,26 @@ import { CONTINENTS } from './continents';
 export class MapControllerService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   map!: L.Map;
-  usaStatesLayers: L.LayerGroup = L.layerGroup();
-  euroStatesLayers: L.LayerGroup = L.layerGroup();
+  usaStatesLayers: L.GeoJSON = L.geoJSON();
+  euroStatesLayers: L.GeoJSON = L.geoJSON();
   usaMarkersLayers: L.LayerGroup = L.layerGroup();
   euroMarkersLayers: L.LayerGroup = L.layerGroup();
   usaMapLayers: L.LayerGroup = L.layerGroup([this.usaStatesLayers, this.usaMarkersLayers]);
   euroMapLayers: L.LayerGroup = L.layerGroup([this.euroStatesLayers, this.euroMarkersLayers]);
 
   constructor(private popupService: PopupService) {}
+
+  getColor(feature: any) {
+    const density = feature.properties.POP2005 / feature.properties.AREA;
+    return density > 1000 ? '#800026' :
+           density > 500  ? '#BD0026' :
+           density > 200  ? '#E31A1C' :
+           density > 100  ? '#FC4E2A' :
+           density > 50   ? '#FD8D3C' :
+           density > 20   ? '#FEB24C' :
+           density > 10   ? '#FED976' :
+                      '#FFEDA0';
+  }
 
   init() {
     this.map = L.map('map', {
@@ -71,29 +83,29 @@ export class MapControllerService {
   }
 
   addStatesLayer(geoJson: GeoJsonFeatures, continent:string) {
-    const stateLayer = L.geoJSON(geoJson, {
+    const geojson = continent === CONTINENTS.a ? this.usaStatesLayers : this.euroStatesLayers;
+    geojson.options = {
       style: (feature) => ({
         weight: 3,
         opacity: 0.5,
         color: '#008f68',
         fillOpacity: 0.8,
-        fillColor: '#6DB65B'
+        fillColor: continent === CONTINENTS.e ? this.getColor(feature!) : '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
         layer.on({
-          mouseover: (e) => (this.highlightFeature(e)),
-          mouseout: (e) => (this.resetFeature(e)),
+          mouseover: (e) => (this.hightlightFeature(e)),
+          mouseout: (e) => (this.resetFeature(e, continent)),
           click: (e) => {
             this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8);
           }
         })
       }
-    });
-
-    this.addMapLayer(stateLayer, 'layer', continent);
+    };
+    geojson.addData(geoJson);
   }
 
-  highlightFeature(e: any) {
+  hightlightFeature(e: any) {
     e.target.setStyle({
       weight: 10,
       opacity: 0.5,
@@ -102,8 +114,12 @@ export class MapControllerService {
       fillColor: '#FAE042'
     });
   }
+
+  resetFeature(e: any, continent: string) {
+    continent === CONTINENTS.a ? this.resetFeatureUSA(e) : this.resetHighlightUE(e);
+  }
   
-  resetFeature(e: any) {
+  resetFeatureUSA(e: any) {
     e.target.setStyle({
       weight: 3,
       opacity: 0.5,
@@ -111,6 +127,10 @@ export class MapControllerService {
       fillOpacity: 0.8,
       fillColor: '#6DB65B'
     });
+  }
+
+  resetHighlightUE(e: any) {
+    this.euroStatesLayers.resetStyle(e.target);
   }
 
   hideOrShowContinent(continent: string) {
@@ -132,17 +152,9 @@ export class MapControllerService {
 
   addMapLayer(layer: any, name: string, continent:string) {
     if (continent === CONTINENTS.e) {
-      if (name === 'layer'){
-        this.euroStatesLayers.addLayer(layer);
-      } else {
-        this.euroMarkersLayers.addLayer(layer);
-      }
+      this.euroMarkersLayers.addLayer(layer);
     } else if (continent === CONTINENTS.a) {
-      if (name === 'layer'){
-        this.usaStatesLayers.addLayer(layer);
-      } else {
-        this.usaMarkersLayers.addLayer(layer);
-      }
+      this.usaMarkersLayers.addLayer(layer);
     }
   }
 }
