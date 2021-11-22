@@ -11,9 +11,12 @@ import { CONTINENTS } from './continents';
 export class MapControllerService {
   private urlTiles = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   map!: L.Map;
-  usaMapLayers: MapLayer[] = [];
-  euroMapLayers: MapLayer[] = [];
-  private bringToBackList: any[] = [];
+  usaStatesLayers: L.LayerGroup = L.layerGroup();
+  euroStatesLayers: L.LayerGroup = L.layerGroup();
+  usaMarkersLayers: L.LayerGroup = L.layerGroup();
+  euroMarkersLayers: L.LayerGroup = L.layerGroup();
+  usaMapLayers: L.LayerGroup = L.layerGroup([this.usaStatesLayers, this.usaMarkersLayers]);
+  euroMapLayers: L.LayerGroup = L.layerGroup([this.euroStatesLayers, this.euroMarkersLayers]);
 
   constructor(private popupService: PopupService) {}
 
@@ -68,7 +71,6 @@ export class MapControllerService {
         fillColor: '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
-        this.bringToBackList.push(layer);
         layer.on({
           mouseover: (e) => (this.highlightFeature(e)),
           mouseout: (e) => (this.resetFeature(e)),
@@ -79,7 +81,6 @@ export class MapControllerService {
       }
     });
 
-    this.bringToBackList.push(stateLayer);
     this.addMapLayer(stateLayer, 'layer', continent);
   }
 
@@ -105,36 +106,34 @@ export class MapControllerService {
 
   hideOrShowContinent(continent: string) {
     if (continent === CONTINENTS.e) {
-      this.euroMapLayers.forEach(e => this.hideOrShowElement(e));
+      this.hideOrShowGroup(this.euroMapLayers);
     }
     if (continent === CONTINENTS.a) {
-      this.usaMapLayers.forEach(e => this.hideOrShowElement(e));
+      this.hideOrShowGroup(this.usaMapLayers);
     }
   }
 
-  hideOrShowElement(e: MapLayer) {
-    if (this.map.hasLayer(e.layer)){
-      e.layer.removeFrom(this.map);
+  hideOrShowGroup(g: L.LayerGroup) {
+    if (this.map.hasLayer(g)){
+      g.removeFrom(this.map);
     } else {
-      e.layer.addTo(this.map);
-      if (this.bringToBackList.find(elt => elt === e.layer)) {
-        e.layer.bringToBack();
-      }
+      g.addTo(this.map);
     }
   }
 
   addMapLayer(layer: any, name: string, continent:string) {
-    if (continent === CONTINENTS.a) {
-      this.usaMapLayers.push({
-        layer: layer,
-        name: name
-      });
-    }
     if (continent === CONTINENTS.e) {
-      this.euroMapLayers.push({
-        layer: layer,
-        name: name
-      });
+      if (name === 'layer'){
+        this.euroStatesLayers.addLayer(layer);
+      } else {
+        this.euroMarkersLayers.addLayer(layer);
+      }
+    } else if (continent === CONTINENTS.a) {
+      if (name === 'layer'){
+        this.usaStatesLayers.addLayer(layer);
+      } else {
+        this.usaMarkersLayers.addLayer(layer);
+      }
     }
   }
 }
