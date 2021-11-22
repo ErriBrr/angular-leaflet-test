@@ -16,6 +16,7 @@ export class MapControllerService {
   euroMarkersLayers: L.LayerGroup = L.layerGroup();
   usaMapLayers: L.LayerGroup = L.layerGroup([this.usaStatesLayers, this.usaMarkersLayers]);
   euroMapLayers: L.LayerGroup = L.layerGroup([this.euroStatesLayers, this.euroMarkersLayers]);
+  citiesMapLayers: L.LayerGroup = L.layerGroup([this.usaMarkersLayers, this.euroMarkersLayers]);
   divInfoText = L.DomUtil.create('div', 'info');
 
   constructor(private popupService: PopupService) {}
@@ -76,8 +77,7 @@ export class MapControllerService {
       "UE": this.euroMapLayers
     };
     const capitals = {
-      "USA capitals": this.usaMarkersLayers,
-      "UE capitals": this.euroMarkersLayers
+      "Capitals": this.citiesMapLayers
     };
     L.control.layers(continents, capitals).addTo(this.map);
 
