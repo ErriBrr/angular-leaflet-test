@@ -16,11 +16,16 @@ export class MapControllerService {
   euroMarkersLayers: L.LayerGroup = L.layerGroup();
   usaMapLayers: L.LayerGroup = L.layerGroup([this.usaStatesLayers, this.usaMarkersLayers]);
   euroMapLayers: L.LayerGroup = L.layerGroup([this.euroStatesLayers, this.euroMarkersLayers]);
+  divInfoText = L.DomUtil.create('div', 'info');
 
   constructor(private popupService: PopupService) {}
 
+  getDensity(feature: any){
+    return Math.round(feature.properties.POP2005 / feature.properties.AREA);
+  }
+
   getFeatureColor(feature: any) {
-    const density = feature.properties.POP2005 / feature.properties.AREA;
+    const density = this.getDensity(feature);
     return this.getDensityColor(density);
   }
 
@@ -33,6 +38,10 @@ export class MapControllerService {
            d > 20   ? '#FEB24C' :
            d > 10   ? '#FED976' :
                       '#FFEDA0';
+  }
+
+  initInfoText() {
+    this.divInfoText.innerHTML = '<h4>State Population Density</h4> Hover over a state';
   }
 
   init() {
@@ -75,6 +84,7 @@ export class MapControllerService {
     const legend = new L.Control({position: 'bottomright'});
     legend.onAdd = (map) => {
       const div = L.DomUtil.create('div', 'info legend');
+      div.innerHTML += '<h4>Population Density</h4><i style="background:#6DB65B"></i> unknown <br>';
       const grades = [0, 10, 20, 50, 100, 200, 500, 1000];
       for (var i = 0; i < grades.length; i++) {
           div.innerHTML +=
@@ -84,6 +94,13 @@ export class MapControllerService {
       return div;
     };
     legend.addTo(this.map);
+
+    const info = new L.Control({position: 'bottomleft'});
+    info.onAdd = (map) => {
+      return this.divInfoText;
+    }
+    this.initInfoText();
+    info.addTo(this.map);
   }
 
   addMarker(lat:number, lon:number, continent:string) {
@@ -107,11 +124,16 @@ export class MapControllerService {
         opacity: 0.5,
         color: '#008f68',
         fillOpacity: 0.8,
-        fillColor: continent === CONTINENTS.e ? this.getFeatureColor(feature!) : '#6DB65B'
+        fillColor: continent === CONTINENTS.e && feature?.properties.AREA > 0 ? this.getFeatureColor(feature!) : '#6DB65B'
       }),
       onEachFeature: (feature, layer) => {
         layer.on({
-          mouseover: (e) => (this.hightlightFeature(e)),
+          mouseover: (e) => {
+            this.hightlightFeature(e);
+            if (continent === CONTINENTS.e && feature?.properties.AREA > 0){
+              this.divInfoText.innerHTML = '<h4>State Population Density</h4><b>' + feature.properties.NAME + '</b><br />' + this.getDensity(feature) + ' people / mi<sup>2</sup>';
+            }
+          },
           mouseout: (e) => (this.resetFeature(e, continent)),
           click: (e) => {
             this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8);
@@ -148,6 +170,7 @@ export class MapControllerService {
 
   resetHighlightUE(e: any) {
     this.euroStatesLayers.resetStyle(e.target);
+    this.initInfoText();
   }
 
   hideOrShowContinent(continent: string) {
