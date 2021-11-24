@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PopupService } from './popup.service';
 import * as L from 'leaflet';
+import 'leaflet-fullscreen';
 import { GeoJsonFeatures } from './feature';
 import { CONTINENTS } from './continents';
 
@@ -48,6 +49,7 @@ export class MapControllerService {
   init() {
     this.map = L.map('map', {
       center: [ 39.8282, -98.5795 ],
+      fullscreenControl: true,
       zoom: 3
     });
 
@@ -119,23 +121,23 @@ export class MapControllerService {
   addStatesLayer(geoJson: GeoJsonFeatures, continent:string) {
     const geojson = continent === CONTINENTS.a ? this.usaStatesLayers : this.euroStatesLayers;
     geojson.options = {
-      style: (feature) => ({
+      style: (feature: any) => ({
         weight: 3,
         opacity: 0.5,
         color: '#008f68',
         fillOpacity: 0.8,
         fillColor: continent === CONTINENTS.e && feature?.properties.AREA > 0 ? this.getFeatureColor(feature!) : '#6DB65B'
       }),
-      onEachFeature: (feature, layer) => {
+      onEachFeature: (feature: any, layer: any) => {
         layer.on({
-          mouseover: (e) => {
+          mouseover: (e: any) => {
             this.hightlightFeature(e);
             if (continent === CONTINENTS.e && feature?.properties.AREA > 0){
               this.divInfoText.innerHTML = '<h4>State Population Density</h4><b>' + feature.properties.NAME + '</b><br />' + this.getDensity(feature) + ' people / mi<sup>2</sup>';
             }
           },
-          mouseout: (e) => (this.resetFeature(e, continent)),
-          click: (e) => {
+          mouseout: (e: any) => (this.resetFeature(e, continent)),
+          click: (e: any) => {
             this.map.setView(new L.LatLng(feature.properties.center[0], feature.properties.center[1]),8);
           }
         })
